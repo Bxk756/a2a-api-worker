@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>A2A Shield — AI Anomaly & Threat Detection API</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A2A Shield is an API-first anomaly and threat detection engine built on Cloudflare Workers. Designed for schools, cities, and modern security teams." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <nav>
+      <div class="logo">
+        <img src="logo-a2a.png" alt="A2A Shield logo" />
+        <div class="logo-text">A2A Shield</div>
+      </div>
+      <div class="nav-links">
+        <a href="#quickstart">Quickstart</a>
+        <a href="#endpoints">Endpoints</a>
+        <a href="#schemas">Schemas</a>
+        <a href="#status">Status</a>
+        <a href="#contact" class="nav-cta">Get API key</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <div class="hero-kicker">Cloudflare Worker API</div>
+        <h1>Real-time anomaly scoring at the edge.</h1>
+        <p>
+          A2A Shield turns your events, logs, and signals into real-time risk scores. Built on Workers, tuned for school and civic security.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#quickstart" class="btn-primary">Start in 5 minutes</a>
+          <a href="#endpoints" class="btn-ghost">Browse endpoints</a>
+        </div>
+        <div class="hero-meta">
+          <span>JSON in, risk out</span>
+          <span>Sub-50ms latency on global edge</span>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <pre style="font-size:0.8rem;color:var(--muted);background:transparent;">
+POST /v1/score
+{
+  "event_type": "login_failure",
+  "user_id": "teacher-123",
+  "ip": "203.0.113.42",
+  "device": "chromebook"
+}
+→
+{ "risk": "elevated", "score": 0.82 }
+        </pre>
+      </aside>
+    </section>
+
+    <section id="quickstart" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Quickstart</h2>
+        <p class="section-subtitle">Call the API from any language that can send HTTPS.</p>
+      </div>
+      <div class="card">
+        <pre style="font-size:0.8rem;color:var(--muted);white-space:pre-wrap;">
+# 1. Set your API key
+export A2A_API_KEY="your-key"
+
+# 2. Send a test event
+curl -X POST https://api.a2ashield.cloud/v1/score \
+  -H "Authorization: Bearer $A2A_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_type": "door_open",
+    "location": "main-entrance",
+    "time": "2025-11-15T14:22:00Z"
+  }'
+        </pre>
+      </div>
+    </section>
+
+    <section id="endpoints" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Endpoints</h2>
+        <p class="section-subtitle">Core routes for scoring and telemetry.</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>POST /v1/score</h3>
+          <p>Score a single event or log line. Returns risk band + numeric score.</p>
+        </article>
+        <article class="card">
+          <h3>POST /v1/batch</h3>
+          <p>Send batches of events. Useful for log replay and backfill.</p>
+        </article>
+        <article class="card">
+          <h3>GET /v1/health</h3>
+          <p>Simple health endpoint for your monitoring and status checks.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="schemas" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Event schema (v1)</h2>
+        <p class="section-subtitle">Minimal, typed, and extensible.</p>
+      </div>
+      <div class="card">
+        <pre style="font-size:0.8rem;color:var(--muted);white-space:pre-wrap;">
+{
+  "event_type": "string",    // required
+  "subject_id": "string",    // user, device, or system ID
+  "ip": "string",
+  "location": "string",
+  "time": "ISO-8601 timestamp",
+  "metadata": { "any": "json" }
+}
+        </pre>
+      </div>
+    </section>
+
+    <section id="status" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Status & reliability</h2>
+        <p class="section-subtitle">Workers on the edge, logs in your control.</p>
+      </div>
+      <div class="card">
+        <p style="font-size:0.9rem;color:var(--muted);">
+          Public status page: <a href="#" style="color:var(--accent);">status.a2ashield.cloud</a> (coming soon).
+        </p>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="card">
+        <h3>Request an A2A Shield API key</h3>
+        <p>Email <a href="mailto:api@a2ashield.cloud" style="color:var(--accent);">api@a2ashield.cloud</a> with a short description of your use case and environment.</p>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2025 Swarm Shield LLC • A2A Shield</span>
+      <span>Built on Cloudflare Workers.</span>
+    </footer>
+  </main>
+</body>
+</html>
