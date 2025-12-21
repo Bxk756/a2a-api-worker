@@ -1,4 +1,4 @@
-# GCP / Cloud Run (NOT for Edge)
+# --- GCP / Cloud Run (keep OUT of Edge repo) ---
 Dockerfile
 cloudbuild.yaml
 engine/
@@ -6,5 +6,9 @@ policies/
 requirements.txt
 test.json
 
-# OS
+# --- Static / unrelated ---
+index.html
+styles.css
+
+# --- OS ---
 .DS_Store
