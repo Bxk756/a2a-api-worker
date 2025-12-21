@@ -1,5 +1,9 @@
 {
   "name": "a2a-shield-worker",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@vercel/node": "^5.5.16"
+  }
 }
