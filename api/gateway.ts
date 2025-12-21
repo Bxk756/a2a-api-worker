@@ -21,56 +21,72 @@ export default async function handler(req: Request): Promise<Response> {
       target: req.headers.get("x-forwarded-for") || "unknown",
     },
     context: {
-      domain: req.headers.get("host"),
-      method: req.method,
-      path: new URL(req.url).pathname,
-    },
-  };
+export const runtime = "edge";
 
-  // Call Policy Engine
-  const policyRes = await fetch(`${POLICY_URL}/v1/evaluate`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(policyEvent),
-  });
+export default async function handler(request: Request) {
+  try {
+    // Enforce POST only
+    if (request.method !== "POST") {
+      return new Response(
+        JSON.stringify({ error: "Method Not Allowed" }),
+        { status: 405 }
+      );
+    }
 
-  if (!policyRes.ok) {
-    return new Response("Policy engine unreachable", { status: 502 });
-  }
+    // 🔐 SAFELY load POLICY_URL
+    const rawPolicyUrl = process.env.POLICY_URL;
+    if (!rawPolicyUrl) {
+      return new Response(
+        JSON.stringify({ error: "POLICY_URL is not defined" }),
+        { status: 500 }
+      );
+    }
 
-  const decision = await policyRes.json();
+    let policyUrl: URL;
+    try {
+      policyUrl = new URL(rawPolicyUrl);
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "POLICY_URL is invalid" }),
+        { status: 500 }
+      );
+    }
 
-  // 🔒 ENFORCEMENT
-  if (decision.decision === "BLOCK") {
+    // Safely parse body
+    let body: any = {};
+    try {
+      body = await request.json();
+    } catch {
+      body = {};
+    }
+
+    // Forward to policy engine
+    const res = await fetch(policyUrl.toString(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    const text = await res.text();
+
     return new Response(
       JSON.stringify({
-        blocked: true,
-        reason: decision.reason,
-        policy_id: decision.policy_id,
+        ok: true,
+        upstream_status: res.status,
+        response: text
       }),
-      { status: 403 }
+      { status: 200 }
     );
-  }
 
-  if (decision.decision === "ESCALATE") {
+  } catch (err: any) {
     return new Response(
       JSON.stringify({
-        escalated: true,
-        reason: decision.reason,
-        policy_id: decision.policy_id,
+        ok: false,
+        error: err?.message ?? "Gateway crash"
       }),
-      { status: 202 }
+      { status: 500 }
     );
   }
-
-  // ✅ ALLOW
-  return new Response(
-    JSON.stringify({
-      allowed: true,
-      policy_id: decision.policy_id,
-    }),
-    { status: 200 }
-  );
 }
