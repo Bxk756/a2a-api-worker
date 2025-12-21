@@ -1,0 +1,10 @@
+# GCP / Cloud Run (NOT for Edge)
+Dockerfile
+cloudbuild.yaml
+engine/
+policies/
+requirements.txt
+test.json
+
+# OS
+.DS_Store

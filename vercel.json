@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/gateway.ts": {
+      "runtime": "edge"
+    }
+  }
+}
